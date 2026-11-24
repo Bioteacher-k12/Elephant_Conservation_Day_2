@@ -1,0 +1,1156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Day 4: Conservation Action Plan &amp; Coexistence Capstone</title>
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Google Fonts: Plus Jakarta Sans -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+          },
+          colors: {
+            forest: {
+              50: '#f2f8f5',
+              100: '#dfeee6',
+              700: '#2d6a4f',
+              800: '#23533e',
+              900: '#1b4332',
+              950: '#112a1f',
+            },
+            warmamber: {
+              50: '#fffbeb',
+              100: '#fef3c7',
+              500: '#f59e0b',
+              600: '#d97706',
+              700: '#b45309',
+            },
+            stonebg: '#fafaf8',
+          }
+        }
+      }
+    };
+  </script>
+  <style>
+    body {
+      background-color: #fafaf8;
+      color: #1f2937;
+    }
+    @media print {
+      .no-print {
+        display: none !important;
+      }
+      body {
+        background-color: #ffffff !important;
+      }
+      #report-modal {
+        position: static !important;
+        background: #ffffff !important;
+        padding: 0 !important;
+        display: block !important;
+      }
+      #report-modal-card {
+        box-shadow: none !important;
+        border: none !important;
+        max-width: 100% !important;
+        width: 100% !important;
+        max-height: none !important;
+        overflow: visible !important;
+        padding: 0 !important;
+      }
+      #report-modal-card * {
+        overflow-wrap: break-word !important;
+        word-wrap: break-word !important;
+        word-break: break-word !important;
+      }
+      #report-modal-card .grid {
+        display: flex !important;
+        flex-wrap: wrap !important;
+        gap: 0.5rem !important;
+      }
+      #report-modal-card .grid > div {
+        flex: 1 1 100% !important;
+        max-width: 100% !important;
+      }
+      #report-modal-card .rounded-xl,
+      #report-modal-card .rounded-lg,
+      #report-modal-card li {
+        break-inside: avoid !important;
+        page-break-inside: avoid !important;
+      }
+    }
+  </style>
+</head>
+<body class="font-sans antialiased min-h-screen flex flex-col">
+
+  <!-- =================================================================== -->
+  <!-- STICKY TOP HEADER                                                   -->
+  <!-- =================================================================== -->
+  <header class="sticky top-0 z-40 bg-forest-900 text-white shadow-md no-print">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 py-3.5 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3">
+      <!-- Title & Target Goal -->
+      <div class="flex items-start sm:items-center gap-3">
+        <div class="w-10 h-10 rounded-xl bg-warmamber-600/20 border border-warmamber-500/40 flex items-center justify-center shrink-0">
+          <!-- Elephant Emblem SVG -->
+          <svg class="w-6 h-6 text-warmamber-500" viewBox="0 0 64 64" fill="currentColor" aria-hidden="true">
+            <path d="M51 24c-1.5-5.5-6.5-9-12.5-9H25c-6.6 0-12 5.4-12 12v7c0 3.3-2.2 6-5 6v4c5 0 9-4 9-9v-3c1.5 1.8 3.7 3 6 3h1v14h6V36h10v13h6V35.5c2.4-1.2 4-3.7 4-6.5v-1h3c1.7 0 3 1.3 3 3v7h4v-7c0-3.5-2.5-6.4-6-7zM21 25a2 2 0 1 1 0-4 2 2 0 0 1 0 4z"/>
+          </svg>
+        </div>
+        <div>
+          <div class="flex flex-wrap items-center gap-2">
+            <span class="text-[11px] font-extrabold uppercase tracking-wider bg-warmamber-600 text-white px-2.5 py-0.5 rounded-full">Day 4 Capstone &bull; BIO.1.5</span>
+            <span class="text-xs text-forest-100/80">Synthesizing Days 1–3</span>
+          </div>
+          <h1 class="text-base sm:text-xl font-extrabold tracking-tight leading-snug mt-0.5">
+            Conservation Action Plan &amp; Coexistence Capstone
+          </h1>
+        </div>
+      </div>
+
+      <!-- Auto-Save Indicator, Progress Bar & Save/Print Button -->
+      <div class="flex flex-wrap items-center gap-2.5">
+        <span class="inline-flex items-center gap-1.5 text-xs font-semibold text-forest-100 bg-forest-950/75 border border-forest-700/80 rounded-xl px-3 py-1.5">
+          <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
+          <span>Auto-saved</span>
+        </span>
+
+        <div class="bg-forest-950/75 border border-forest-700/80 rounded-xl px-3 py-1.5 flex items-center gap-2">
+          <span class="text-xs text-forest-100/85">Progress:</span>
+          <span id="progress-text" class="text-xs font-bold text-warmamber-500">0%</span>
+          <div class="w-14 sm:w-20 h-2 bg-forest-950 rounded-full overflow-hidden border border-forest-700">
+            <div id="progress-bar" class="h-full bg-warmamber-500 transition-all duration-300" style="width: 0%"></div>
+          </div>
+        </div>
+
+        <button
+          type="button"
+          onclick="openReportModal()"
+          class="px-3.5 py-1.5 rounded-xl bg-warmamber-600 hover:bg-warmamber-700 text-white text-xs sm:text-sm font-bold shadow-xs transition flex items-center gap-1.5 cursor-pointer"
+        >
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
+          </svg>
+          <span>Save / Print Plan</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- =================================================================== -->
+  <!-- MAIN CAPSTONE WORKSPACE                                             -->
+  <!-- =================================================================== -->
+  <main class="flex-1 max-w-6xl w-full mx-auto px-4 sm:px-6 py-6 sm:py-8 space-y-8 no-print">
+
+    <!-- =================================================================== -->
+    <!-- CAPSTONE MISSION BRIEF & 3-DAY SYNTHESIS CONNECTOR                  -->
+    <!-- =================================================================== -->
+    <section class="bg-white rounded-2xl border border-stone-200 p-5 sm:p-7 shadow-xs space-y-4">
+      <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+        <div class="space-y-1">
+          <span class="text-xs font-bold uppercase tracking-wider text-warmamber-700">Capstone Engineering Challenge &bull; Standard BIO.1.5</span>
+          <h2 class="text-xl sm:text-2xl font-extrabold text-forest-900">Design a Science-Based Elephant Coexistence Action Plan</h2>
+          <p class="text-xs sm:text-sm text-stone-600 max-w-3xl leading-relaxed">
+            Over the past three days, you investigated <strong>why people value biodiversity</strong> (Day 1), analyzed <strong>aerial transect population &amp; carcass ratio data</strong> (Day 2), and evaluated <strong>real-world conservation programs</strong> across 4 levels and 8 criteria (Day 3). Today, you will act as a Conservation Biologist tasked with designing a <strong>$1,000,000 Regional Action Plan</strong> for a priority elephant hotspot.
+          </p>
+        </div>
+
+        <div class="rounded-2xl bg-forest-50 border border-forest-700/25 p-4 shrink-0 text-xs space-y-1.5">
+          <div class="font-extrabold text-forest-900 uppercase tracking-wider">Day 4 Success Criteria</div>
+          <ul class="space-y-1 text-stone-700">
+            <li class="flex items-center gap-2">
+              <span class="w-1.5 h-1.5 rounded-full bg-warmamber-600"></span>
+              <span>Diagnose regional census &amp; conflict data</span>
+            </li>
+            <li class="flex items-center gap-2">
+              <span class="w-1.5 h-1.5 rounded-full bg-warmamber-600"></span>
+              <span>Allocate <strong>$1,000,000</strong> across multi-level actions</span>
+            </li>
+            <li class="flex items-center gap-2">
+              <span class="w-1.5 h-1.5 rounded-full bg-warmamber-600"></span>
+              <span>Defend trade-offs using a scientific CER</span>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- =================================================================== -->
+    <!-- PART 1: SELECT A PRIORITY HOTSPOT & DIAGNOSE FIELD DATA             -->
+    <!-- =================================================================== -->
+    <section class="bg-white rounded-2xl border border-stone-200 p-5 sm:p-7 shadow-xs space-y-6">
+      <div class="border-b border-stone-200 pb-4">
+        <span class="text-xs font-bold uppercase tracking-wider text-warmamber-700">Part 1 &bull; Site Selection &amp; Ecological Diagnosis</span>
+        <h2 class="text-xl sm:text-2xl font-extrabold text-forest-900 mt-1">Choose 1 Priority Elephant Hotspot to Protect</h2>
+        <p class="text-xs sm:text-sm text-stone-600 mt-0.5">
+          Select one of the three real-world conservation landscapes below. Each site presents distinct census trends (Day 2) and human-elephant conflict pressures (Day 1).
+        </p>
+      </div>
+
+      <!-- 3 Hotspot Selector Cards -->
+      <div id="hotspot-cards-grid" class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <!-- Populated via JS -->
+      </div>
+
+      <!-- Selected Hotspot Detailed Field Dossier -->
+      <div id="hotspot-dossier" class="rounded-2xl bg-forest-50/65 border border-forest-700/25 p-5 space-y-4">
+        <!-- Populated via JS -->
+      </div>
+
+      <!-- Part 1 Diagnostic Questions -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-5 pt-1">
+        <div class="space-y-2">
+          <label for="p1-diagnosis" class="block text-sm font-bold text-forest-900">
+            1. Ecological Diagnosis: Using the census data above (live count, carcass ratio, and trend), is this elephant population currently stable or declining, and what are the top two threats driving that trend?
+          </label>
+          <textarea
+            id="p1-diagnosis"
+            rows="3"
+            placeholder="Cite the carcass ratio (remember the >8% threshold from Day 2) and identify the specific poaching, habitat, or conflict pressures..."
+            class="w-full rounded-xl border border-stone-300 bg-stonebg p-3 text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-forest-700"
+          ></textarea>
+        </div>
+
+        <div class="space-y-2">
+          <label for="p1-values" class="block text-sm font-bold text-forest-900">
+            2. Stakeholder &amp; Value Conflict: Which biodiversity values (Environmental, Aesthetic, Economic, Intrinsic) are competing in this landscape between local communities and wildlife conservationists?
+          </label>
+          <textarea
+            id="p1-values"
+            rows="3"
+            placeholder="Explain how local farmers/residents experience costs or risks vs. the ecological or economic value of elephants..."
+            class="w-full rounded-xl border border-stone-300 bg-stonebg p-3 text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-forest-700"
+          ></textarea>
+        </div>
+      </div>
+    </section>
+
+    <!-- =================================================================== -->
+    <!-- PART 2: $1,000,000 CONSERVATION ACTION PLAN BUILDER & SIMULATOR     -->
+    <!-- =================================================================== -->
+    <section class="bg-white rounded-2xl border border-stone-200 p-5 sm:p-7 shadow-xs space-y-6">
+      <div class="border-b border-stone-200 pb-4 flex flex-col lg:flex-row lg:items-center justify-between gap-3">
+        <div>
+          <span class="text-xs font-bold uppercase tracking-wider text-warmamber-700">Part 2 &bull; Multi-Level Action Plan &amp; Impact Model</span>
+          <h2 class="text-xl sm:text-2xl font-extrabold text-forest-900 mt-1">Build Your $1,000,000 Regional Conservation Plan</h2>
+          <p class="text-xs sm:text-sm text-stone-600 mt-0.5">
+            Select <strong>3 to 5 conservation strategies</strong> below within your <strong>$1,000,000 budget</strong>. Aim to span multiple <strong>Conservation Levels</strong> (Day 3) and cover strong <strong>Evaluation Criteria</strong> while protecting both elephants and local livelihoods.
+          </p>
+        </div>
+
+        <button
+          type="button"
+          onclick="clearSelectedStrategies()"
+          class="self-start lg:self-auto px-3.5 py-2 rounded-xl border border-stone-300 bg-stonebg hover:bg-stone-100 text-xs font-bold text-stone-700 transition cursor-pointer shrink-0"
+        >
+          Clear Selections
+        </button>
+      </div>
+
+      <!-- Inline Budget Warning Banner (Replaces alert()) -->
+      <div id="budget-warning" class="hidden rounded-xl bg-red-50 border border-red-300 px-4 py-2.5 text-xs sm:text-sm font-bold text-red-700">
+        Adding that strategy would exceed your $1,000,000 grant cap! Deselect another intervention first to free up funds.
+      </div>
+
+      <!-- Live Dashboard: Budget, Levels Covered, 8-Criteria Score & Projected Impact -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5">
+        <div id="budget-card" class="rounded-2xl bg-forest-50 border border-forest-700/25 p-4">
+          <div class="text-[11px] font-bold uppercase text-forest-700">Grant Budget Used</div>
+          <div id="budget-used-text" class="text-lg sm:text-xl font-extrabold text-forest-900 mt-0.5">$0 / $1,000,000</div>
+          <div id="budget-rem-text" class="text-xs font-semibold text-stone-600 mt-1">$1,000,000 remaining</div>
+        </div>
+
+        <div class="rounded-2xl bg-stonebg border border-stone-200 p-4">
+          <div class="text-[11px] font-bold uppercase text-stone-500">Action Levels Covered</div>
+          <div id="levels-covered-text" class="text-lg sm:text-xl font-extrabold text-forest-900 mt-0.5">0 / 4 Levels</div>
+          <div id="levels-list-text" class="text-[11px] font-semibold text-stone-600 mt-1 truncate">Select strategies below</div>
+        </div>
+
+        <div class="rounded-2xl bg-warmamber-50 border border-warmamber-500/30 p-4">
+          <div class="text-[11px] font-bold uppercase text-warmamber-700">8-Criteria Coverage</div>
+          <div id="criteria-covered-text" class="text-lg sm:text-xl font-extrabold text-warmamber-700 mt-0.5">0 / 8 Criteria</div>
+          <div class="w-full h-1.5 bg-warmamber-100 rounded-full overflow-hidden mt-2">
+            <div id="criteria-bar" class="h-full bg-warmamber-600 transition-all duration-300" style="width: 0%"></div>
+          </div>
+        </div>
+
+        <div class="rounded-2xl bg-stonebg border border-stone-200 p-4">
+          <div class="text-[11px] font-bold uppercase text-stone-500">5-Year Ecological Outlook</div>
+          <div id="outlook-badge" class="text-sm sm:text-base font-extrabold text-stone-600 mt-1">Awaiting Plan</div>
+          <div id="outlook-subtext" class="text-[11px] text-stone-500 mt-0.5">Add strategies to model outcomes</div>
+        </div>
+      </div>
+
+      <!-- Projected Outcome Bars (Dynamic Simulation Based on Chosen Strategies & Hotspot) -->
+      <div class="rounded-2xl bg-stonebg border border-stone-200 p-4 sm:p-5 space-y-3">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-1">
+          <h3 class="text-xs sm:text-sm font-extrabold text-forest-900 uppercase tracking-wider">Projected 5-Year Impact Simulator</h3>
+          <span class="text-xs text-stone-500">Updates live based on how well your strategies match your hotspot's threats</span>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
+          <div class="bg-white rounded-xl border border-stone-200 p-3 space-y-1.5">
+            <div class="flex justify-between font-bold">
+              <span class="text-forest-900">Poaching Deterrence</span>
+              <span id="sim-poaching-pct" class="text-forest-700">0%</span>
+            </div>
+            <div class="w-full h-2 bg-stone-200 rounded-full overflow-hidden">
+              <div id="sim-poaching-bar" class="h-full bg-forest-700 transition-all duration-300" style="width: 0%"></div>
+            </div>
+            <p class="text-[11px] text-stone-500">Patrols, ranger gear &amp; wildlife law enforcement</p>
+          </div>
+
+          <div class="bg-white rounded-xl border border-stone-200 p-3 space-y-1.5">
+            <div class="flex justify-between font-bold">
+              <span class="text-warmamber-700">Community Coexistence</span>
+              <span id="sim-community-pct" class="text-warmamber-700">0%</span>
+            </div>
+            <div class="w-full h-2 bg-stone-200 rounded-full overflow-hidden">
+              <div id="sim-community-bar" class="h-full bg-warmamber-600 transition-all duration-300" style="width: 0%"></div>
+            </div>
+            <p class="text-[11px] text-stone-500">Crop protection, revenue sharing &amp; local cooperation</p>
+          </div>
+
+          <div class="bg-white rounded-xl border border-stone-200 p-3 space-y-1.5">
+            <div class="flex justify-between font-bold">
+              <span class="text-forest-900">Habitat &amp; Corridor Health</span>
+              <span id="sim-habitat-pct" class="text-forest-700">0%</span>
+            </div>
+            <div class="w-full h-2 bg-stone-200 rounded-full overflow-hidden">
+              <div id="sim-habitat-bar" class="h-full bg-emerald-600 transition-all duration-300" style="width: 0%"></div>
+            </div>
+            <p class="text-[11px] text-stone-500">Protected corridors, BMPs &amp; scientific monitoring</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- 8 Conservation Interventions Catalog (2 per Level) -->
+      <div class="space-y-3">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-1">
+          <h3 class="text-sm sm:text-base font-extrabold text-forest-900">Available Conservation Interventions (Select 3–5 within $1,000,000)</h3>
+          <span id="selected-strat-count" class="text-xs font-bold text-forest-700">0 strategies selected</span>
+        </div>
+
+        <div id="strategies-grid" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <!-- Populated dynamically via JS -->
+        </div>
+      </div>
+
+      <!-- Custom Implementation Notes for Chosen Plan -->
+      <div class="rounded-2xl bg-forest-50/50 border border-forest-700/20 p-4 sm:p-5 space-y-2">
+        <label for="p2-implementation" class="block text-sm font-bold text-forest-900">
+          Implementation Roadmap: Describe how your selected interventions will work together on the ground over the next 5 years (who leads each action and how local people are involved).
+        </label>
+        <textarea
+          id="p2-implementation"
+          rows="3"
+          placeholder="Explain how your chosen strategies connect across levels (e.g., how community scouts coordinate with park rangers and scientists)..."
+          class="w-full rounded-xl border border-stone-300 bg-white p-3 text-sm focus:outline-none focus:ring-2 focus:ring-forest-700"
+        ></textarea>
+      </div>
+    </section>
+
+    <!-- =================================================================== -->
+    <!-- PART 3: SCIENTIFIC ARGUMENTATION (CER) & CAPSTONE SYNTHESIS         -->
+    <!-- =================================================================== -->
+    <section class="bg-white rounded-2xl border border-stone-200 p-5 sm:p-7 shadow-xs space-y-6">
+      <div class="border-b border-stone-200 pb-4">
+        <span class="text-xs font-bold uppercase tracking-wider text-warmamber-700">Part 3 &bull; Scientific Argumentation (Claim &ndash; Evidence &ndash; Reasoning)</span>
+        <h2 class="text-xl sm:text-2xl font-extrabold text-forest-900 mt-1">Defend Your Conservation Action Plan</h2>
+        <p class="text-xs sm:text-sm text-stone-600 mt-0.5">
+          Write a scientific argument defending why your plan will stabilize elephant populations while addressing human needs, and evaluate one major trade-off.
+        </p>
+      </div>
+
+      <div class="space-y-4">
+        <div class="space-y-2">
+          <label for="cer-claim" class="block text-sm font-bold text-forest-900">
+            1. Claim: State clearly how your action plan will change the elephant population trend and human-elephant conflict in your chosen hotspot over the next 5 years.
+          </label>
+          <textarea
+            id="cer-claim"
+            rows="2"
+            placeholder="Write a clear, specific claim (e.g., 'By combining community beehive fences with corridor protection and anti-poaching patrols, our plan will lower the carcass ratio below 8% and reduce crop raids...')..."
+            class="w-full rounded-xl border border-stone-300 bg-stonebg p-3 text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-forest-700"
+          ></textarea>
+        </div>
+
+        <div class="space-y-2">
+          <label for="cer-evidence" class="block text-sm font-bold text-forest-900">
+            2. Evidence: Cite specific data from your hotspot dossier, the Great Elephant Census (Day 2), or real-world programs you investigated (Day 3) that support your chosen strategies.
+          </label>
+          <textarea
+            id="cer-evidence"
+            rows="3"
+            placeholder="Reference specific numbers or case studies (e.g., Uganda's 0.5% carcass ratio after strong park protection, Amboseli's community scouts, or Tarangire's chili fences and corridor easements)..."
+            class="w-full rounded-xl border border-stone-300 bg-stonebg p-3 text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-forest-700"
+          ></textarea>
+        </div>
+
+        <div class="space-y-2">
+          <label for="cer-reasoning" class="block text-sm font-bold text-forest-900">
+            3. Reasoning &amp; Trade-Off Evaluation: Explain the ecological and social mechanisms behind why your evidence supports your claim, AND identify one limitation or budget trade-off your team had to accept.
+          </label>
+          <textarea
+            id="cer-reasoning"
+            rows="3"
+            placeholder="Connect your evidence to carrying capacity, mortality rates, and biodiversity values—and explain what strategy you had to leave out due to the $1,000,000 budget limit..."
+            class="w-full rounded-xl border border-stone-300 bg-stonebg p-3 text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-forest-700"
+          ></textarea>
+        </div>
+      </div>
+
+      <!-- Bottom Save/Print Trigger -->
+      <div class="pt-3 border-t border-stone-200 flex justify-end">
+        <button
+          type="button"
+          onclick="openReportModal()"
+          class="px-5 py-3 rounded-xl bg-forest-900 hover:bg-forest-800 text-white text-xs sm:text-sm font-bold shadow-xs transition flex items-center gap-2 cursor-pointer"
+        >
+          <svg class="w-4 h-4 text-warmamber-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
+          </svg>
+          <span>View, Save, or Print Day 4 Capstone Report</span>
+        </button>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- =================================================================== -->
+  <!-- FOOTER WITH RESET PROGRESS CONTROL                                  -->
+  <!-- =================================================================== -->
+  <footer class="bg-stone-100 border-t border-stone-200 py-5 px-4 sm:px-6 text-xs text-stone-600 no-print">
+    <div class="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-3">
+      <span>Conservation Biology Capstone &bull; Synthesizing Biodiversity Values, Census Data &amp; Program Evaluation</span>
+      <div class="flex items-center gap-2">
+        <button
+          type="button"
+          id="reset-trigger-btn"
+          onclick="showResetConfirm()"
+          class="px-3.5 py-1.5 rounded-xl border border-stone-300 bg-white hover:bg-red-50 hover:border-red-300 hover:text-red-700 text-stone-700 font-semibold transition cursor-pointer"
+        >
+          Reset All Progress
+        </button>
+        <div id="reset-confirm-bar" class="hidden flex items-center gap-2 bg-red-50 border border-red-300 rounded-xl px-3 py-1">
+          <span class="text-red-800 font-semibold">Clear your Day 4 action plan?</span>
+          <button
+            type="button"
+            onclick="confirmResetAll()"
+            class="px-2.5 py-1 rounded-lg bg-red-600 hover:bg-red-700 text-white font-bold cursor-pointer"
+          >
+            Yes, Reset
+          </button>
+          <button
+            type="button"
+            onclick="cancelReset()"
+            class="px-2.5 py-1 rounded-lg bg-white border border-stone-300 text-stone-700 font-semibold cursor-pointer"
+          >
+            Cancel
+          </button>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- =================================================================== -->
+  <!-- PRINTABLE & COPYABLE DAY 4 CAPSTONE REPORT MODAL                    -->
+  <!-- =================================================================== -->
+  <div id="report-modal" class="hidden fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
+    <div id="report-modal-card" class="bg-white rounded-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto shadow-2xl border border-stone-300 p-6 sm:p-8 space-y-6">
+      <div class="flex flex-col sm:flex-row sm:items-start justify-between gap-4 border-b-2 border-forest-900 pb-4">
+        <div class="space-y-1.5">
+          <span class="text-xs font-bold uppercase tracking-wider text-warmamber-700">Student Conservation Capstone</span>
+          <h2 class="text-xl sm:text-2xl font-extrabold text-forest-900">Day 4: Conservation Action Plan &amp; Coexistence Report</h2>
+          <div class="flex flex-wrap items-center gap-2 text-xs sm:text-sm text-stone-700 pt-1">
+            <label for="rep-student-input" class="font-bold text-forest-900 no-print">Student Name:</label>
+            <input
+              id="rep-student-input"
+              type="text"
+              placeholder="Enter your name before printing..."
+              oninput="onStudentNameChange(this.value)"
+              class="no-print rounded-lg border border-stone-300 bg-stonebg px-2.5 py-1 text-xs sm:text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-forest-700"
+            />
+            <span class="hidden print:inline"><strong>Student:</strong> <span id="rep-student-print-name">______________________</span> &nbsp;&bull;&nbsp;</span>
+            <span><strong>Date:</strong> <span id="rep-date"></span></span>
+          </div>
+        </div>
+        <div class="flex flex-wrap items-center gap-2 no-print shrink-0">
+          <button
+            type="button"
+            onclick="copyReportToClipboard()"
+            class="px-3.5 py-2 rounded-xl bg-warmamber-600 hover:bg-warmamber-700 text-white text-xs font-bold shadow-xs transition cursor-pointer"
+          >
+            Copy to Clipboard
+          </button>
+          <button
+            type="button"
+            onclick="window.print()"
+            class="px-3.5 py-2 rounded-xl bg-forest-900 hover:bg-forest-800 text-white text-xs font-bold shadow-xs transition cursor-pointer"
+          >
+            Print / Save as PDF
+          </button>
+          <button
+            type="button"
+            onclick="closeReportModal()"
+            class="px-3 py-2 rounded-xl bg-stone-200 hover:bg-stone-300 text-stone-800 text-xs font-bold transition cursor-pointer"
+          >
+            Close
+          </button>
+        </div>
+      </div>
+
+      <div id="copy-toast" class="hidden rounded-xl bg-emerald-50 border border-emerald-300 text-emerald-800 px-4 py-2.5 text-xs font-bold no-print">
+        Day 4 Capstone Report copied to your clipboard!
+      </div>
+
+      <div class="space-y-5 text-xs sm:text-sm text-stone-800">
+        <!-- Part 1 Summary -->
+        <div class="rounded-xl border border-stone-200 p-4 space-y-2.5">
+          <h3 class="font-extrabold text-forest-900 uppercase tracking-wider text-xs">Part 1: Target Hotspot &amp; Diagnosis</h3>
+          <div id="rep-hotspot-title" class="font-bold text-forest-900"></div>
+          <div>
+            <div class="font-bold text-forest-900">1. Ecological Diagnosis:</div>
+            <p id="rep-p1-diag" class="mt-0.5 whitespace-pre-line text-stone-700 italic">No response entered.</p>
+          </div>
+          <div class="pt-2 border-t border-stone-200">
+            <div class="font-bold text-forest-900">2. Stakeholder &amp; Biodiversity Value Conflict:</div>
+            <p id="rep-p1-val" class="mt-0.5 whitespace-pre-line text-stone-700 italic">No response entered.</p>
+          </div>
+        </div>
+
+        <!-- Part 2 Summary -->
+        <div class="rounded-xl border border-stone-200 p-4 space-y-2.5">
+          <h3 class="font-extrabold text-forest-900 uppercase tracking-wider text-xs">Part 2: $1,000,000 Multi-Level Action Plan</h3>
+          <div id="rep-plan-metrics" class="font-semibold text-forest-800"></div>
+          <ul id="rep-strategies-list" class="space-y-1.5 list-disc list-inside text-stone-700"></ul>
+          <div class="pt-2 border-t border-stone-200">
+            <div class="font-bold text-forest-900">5-Year Implementation Roadmap:</div>
+            <p id="rep-p2-impl" class="mt-0.5 whitespace-pre-line text-stone-700 italic">No response entered.</p>
+          </div>
+        </div>
+
+        <!-- Part 3 Summary -->
+        <div class="rounded-xl border border-stone-200 p-4 space-y-3">
+          <h3 class="font-extrabold text-forest-900 uppercase tracking-wider text-xs">Part 3: Scientific Argument (CER)</h3>
+          <div>
+            <div class="font-bold text-forest-900">Claim:</div>
+            <p id="rep-cer-claim" class="mt-0.5 whitespace-pre-line text-stone-700 italic">No response entered.</p>
+          </div>
+          <div class="pt-2 border-t border-stone-200">
+            <div class="font-bold text-forest-900">Evidence:</div>
+            <p id="rep-cer-evidence" class="mt-0.5 whitespace-pre-line text-stone-700 italic">No response entered.</p>
+          </div>
+          <div class="pt-2 border-t border-stone-200">
+            <div class="font-bold text-forest-900">Reasoning &amp; Trade-Off Evaluation:</div>
+            <p id="rep-cer-reasoning" class="mt-0.5 whitespace-pre-line text-stone-700 italic">No response entered.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- =================================================================== -->
+  <!-- JAVASCRIPT: HOTSPOTS, STRATEGIES, IMPACT SIMULATOR & PERSISTENCE    -->
+  <!-- =================================================================== -->
+  <script>
+    const STORAGE_KEY = 'day4_conservation_action_plan_v1';
+    const BUDGET_CAP = 1000000;
+
+    const HOTSPOTS = [
+      {
+        id: 'sebungwe',
+        name: 'Sebungwe Region, Zimbabwe',
+        tag: 'Severe Decline & Poaching Crisis',
+        liveCount: '3,521 elephants (down 74% from 13,600)',
+        carcassRatio: '16.8% (Well above 8% stability threshold)',
+        primaryThreats: 'Commercial ivory poaching, underfunded park patrols, and agricultural encroachment into Zambezi valley corridors.',
+        communityContext: 'Rural district households rely on subsistence maize/sorghum farming and receive minimal direct wildlife tourism revenue due to remote roads.',
+        weights: { poaching: 0.45, community: 0.30, habitat: 0.25 }
+      },
+      {
+        id: 'niassa',
+        name: 'Niassa-Gorongosa Corridor, Mozambique',
+        tag: 'Post-Conflict Recovery & Timber Pressure',
+        liveCount: '~10,800 elephants nationwide (32% carcass ratio)',
+        carcassRatio: '32.0% (High active mortality)',
+        primaryThreats: 'Cross-border poaching syndicates, illegal logging/mining roads fragmenting forest corridors, and crop raiding near river villages.',
+        communityContext: 'Fast-growing farming villages border unfenced reserves; families face high food insecurity when herds trample cassava and maize fields.',
+        weights: { poaching: 0.40, community: 0.30, habitat: 0.30 }
+      },
+      {
+        id: 'amboseli_tsavo',
+        name: 'Amboseli–Tsavo Borderlands, Kenya',
+        tag: 'Habitat Fragmentation & Drought Conflict',
+        liveCount: '~25,959 elephants in Kenya (13.0% carcass ratio)',
+        carcassRatio: '13.0% (Elevated conflict & drought stress)',
+        primaryThreats: 'Fencing and highway expansion blocking seasonal migration corridors, severe droughts, and retaliatory spearings after crop/livestock raids.',
+        communityContext: 'Maasai pastoralists and smallholder farmers share unfenced dispersal lands; 50–120 "problem" elephants are shot nationwide each year during conflicts.',
+        weights: { poaching: 0.20, community: 0.45, habitat: 0.35 }
+      }
+    ];
+
+    const STRATEGIES = [
+      {
+        id: 's_beehive',
+        name: 'Village Beehive & Chili-Grease Perimeter Fences',
+        level: 'Community Level',
+        levelBadgeClass: 'bg-forest-700 text-white',
+        cost: 200000,
+        criteria: ['3. Local / Native Cooperation'],
+        values: ['Economic', 'Environmental'],
+        impacts: { poaching: 10, community: 45, habitat: 10 },
+        description: 'Equips 40 border farming villages with suspended African honeybee hives and chili-oil buffer ropes that naturally deter crop-raiding elephants while producing honey income.'
+      },
+      {
+        id: 's_scouts',
+        name: 'Local Wildlife Scout & Rapid-Response Coexistence Team',
+        level: 'Community Level',
+        levelBadgeClass: 'bg-forest-700 text-white',
+        cost: 250000,
+        criteria: ['2. Ranger & Staff Training', '3. Local / Native Cooperation'],
+        values: ['Economic', 'Intrinsic'],
+        impacts: { poaching: 25, community: 40, habitat: 10 },
+        description: 'Hires, trains, and equips 35 local residents as early-warning wildlife scouts who guide elephants safely away from farms before retaliatory killings occur.'
+      },
+      {
+        id: 's_patrols',
+        name: '24/7 Anti-Poaching Patrols & Detection Dog Unit',
+        level: 'National Level',
+        levelBadgeClass: 'bg-forest-900 text-white',
+        cost: 350000,
+        criteria: ['1. Anti-Poaching Patrols', '2. Ranger & Staff Training', '4. Wildlife Law Enforcement'],
+        values: ['Intrinsic', 'Environmental'],
+        impacts: { poaching: 55, community: 5, habitat: 10 },
+        description: 'Funds night-vision gear, patrol vehicles, trained sniffer dogs, and wildlife crime prosecution units to intercept ivory poachers along park boundaries.'
+      },
+      {
+        id: 's_corridors',
+        name: 'Protected Migration Corridors & Solar Waterholes',
+        level: 'National Level',
+        levelBadgeClass: 'bg-forest-900 text-white',
+        cost: 300000,
+        criteria: ['5. Protected Area Designation'],
+        values: ['Environmental', 'Intrinsic'],
+        impacts: { poaching: 10, community: 20, habitat: 50 },
+        description: 'Establishes legally protected seasonal migration corridors and installs 8 solar-powered waterholes inside reserve boundaries to keep herds out of village farms during droughts.'
+      },
+      {
+        id: 's_bmp',
+        name: 'Timber & Mining Best Management Practices (BMPs)',
+        level: 'National Level',
+        levelBadgeClass: 'bg-forest-900 text-white',
+        cost: 200000,
+        criteria: ['8. Extractive Industry BMPs'],
+        values: ['Environmental', 'Economic'],
+        impacts: { poaching: 15, community: 10, habitat: 45 },
+        description: 'Enforces wildlife-friendly forestry and mining standards—requiring buffer zones, gated logging roads (to block poachers), and native tree replanting.'
+      },
+      {
+        id: 's_gps',
+        name: 'Satellite GPS Collar Tracking & Aerial Transect Census',
+        level: 'Global Level',
+        levelBadgeClass: 'bg-warmamber-700 text-white',
+        cost: 200000,
+        criteria: ['7. Scientific Research'],
+        values: ['Environmental', 'Intrinsic'],
+        impacts: { poaching: 25, community: 15, habitat: 30 },
+        description: 'Partners with international researchers to fit 25 matriarch elephants with real-time geofenced GPS collars that send SMS alerts when herds approach farms or poaching zones.'
+      },
+      {
+        id: 's_cites',
+        name: 'Cross-Border CITES Ivory Trafficking Taskforce',
+        level: 'Global Level',
+        levelBadgeClass: 'bg-warmamber-700 text-white',
+        cost: 250000,
+        criteria: ['4. Wildlife Law Enforcement'],
+        values: ['Intrinsic', 'Environmental'],
+        impacts: { poaching: 45, community: 5, habitat: 10 },
+        description: 'Coordinates customs intelligence across neighboring borders and ports to dismantle international ivory trafficking networks.'
+      },
+      {
+        id: 's_education',
+        name: 'Youth Conservation Camps & Eco-Tourism Storytelling',
+        level: 'Individual Level',
+        levelBadgeClass: 'bg-warmamber-600 text-white',
+        cost: 150000,
+        criteria: ['6. Public Awareness Campaigns'],
+        values: ['Aesthetic', 'Intrinsic'],
+        impacts: { poaching: 10, community: 25, habitat: 15 },
+        description: 'Hosts student wildlife safaris, community film screenings, and global anti-ivory pledges to build personal stewardship and eco-tourism pride.'
+      }
+    ];
+
+    let state = {
+      studentName: '',
+      selectedHotspotId: 'sebungwe',
+      selectedStrategyIds: [],
+      responses: {
+        p1Diagnosis: '',
+        p1Values: '',
+        p2Implementation: '',
+        cerClaim: '',
+        cerEvidence: '',
+        cerReasoning: ''
+      }
+    };
+
+    document.addEventListener('DOMContentLoaded', () => {
+      loadState();
+      applyTextValuesToDOM();
+      renderHotspotSection();
+      renderStrategiesAndDashboard();
+      updateProgressBar();
+    });
+
+    function formatMoney(n) {
+      return '$' + Math.round(n).toLocaleString('en-US');
+    }
+
+    function applyTextValuesToDOM() {
+      const mapping = {
+        'p1-diagnosis': 'p1Diagnosis',
+        'p1-values': 'p1Values',
+        'p2-implementation': 'p2Implementation',
+        'cer-claim': 'cerClaim',
+        'cer-evidence': 'cerEvidence',
+        'cer-reasoning': 'cerReasoning'
+      };
+
+      Object.entries(mapping).forEach(([domId, stateKey]) => {
+        const el = document.getElementById(domId);
+        if (!el) return;
+        el.value = state.responses[stateKey] || '';
+        el.addEventListener('input', (e) => {
+          state.responses[stateKey] = e.target.value;
+          saveState();
+          updateProgressBar();
+        });
+      });
+    }
+
+    function onStudentNameChange(val) {
+      state.studentName = val;
+      const span = document.getElementById('rep-student-print-name');
+      if (span) span.textContent = val.trim() || '______________________';
+      saveState();
+    }
+
+    // ==================== PART 1: HOTSPOTS ====================
+    function selectHotspot(id) {
+      state.selectedHotspotId = id;
+      saveState();
+      renderHotspotSection();
+      renderStrategiesAndDashboard();
+      updateProgressBar();
+    }
+
+    function renderHotspotSection() {
+      const grid = document.getElementById('hotspot-cards-grid');
+      grid.innerHTML = HOTSPOTS.map((h) => {
+        const active = h.id === state.selectedHotspotId;
+        return `
+          <button
+            type="button"
+            onclick="selectHotspot('${h.id}')"
+            class="text-left rounded-2xl p-4 transition cursor-pointer flex flex-col justify-between space-y-2.5 ${
+              active
+                ? 'border-2 border-forest-900 bg-forest-50/75 shadow-sm'
+                : 'border border-stone-200 bg-stonebg hover:border-forest-700'
+            }"
+          >
+            <div class="space-y-1">
+              <div class="flex items-center justify-between gap-2">
+                <span class="px-2.5 py-0.5 rounded-full text-[11px] font-extrabold ${active ? 'bg-forest-900 text-white' : 'bg-warmamber-100 text-warmamber-700'}">
+                  ${h.tag}
+                </span>
+                <span class="text-xs font-extrabold ${active ? 'text-emerald-700' : 'text-stone-400'}">
+                  ${active ? '&#10003; Active Site' : 'Select'}
+                </span>
+              </div>
+              <div class="font-extrabold text-forest-900 text-sm sm:text-base pt-1">${h.name}</div>
+            </div>
+            <div class="text-xs text-stone-600">
+              <strong>Carcass Ratio:</strong> ${h.carcassRatio.split(' ')[0]}
+            </div>
+          </button>
+        `;
+      }).join('');
+
+      const activeH = HOTSPOTS.find((h) => h.id === state.selectedHotspotId) || HOTSPOTS[0];
+      document.getElementById('hotspot-dossier').innerHTML = `
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-forest-700/15 pb-3">
+          <div>
+            <span class="text-xs font-extrabold uppercase tracking-wider text-forest-700">Selected Field Dossier</span>
+            <h3 class="text-lg sm:text-xl font-extrabold text-forest-900">${activeH.name}</h3>
+          </div>
+          <span class="self-start sm:self-auto px-3 py-1 rounded-full bg-red-100 text-red-800 text-xs font-extrabold">
+            Carcass Ratio: ${activeH.carcassRatio}
+          </span>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-3.5 text-xs sm:text-sm">
+          <div class="rounded-xl bg-white border border-stone-200 p-3.5">
+            <div class="font-extrabold text-forest-900 text-xs uppercase">Census Population Data</div>
+            <p class="mt-1 text-stone-700">${activeH.liveCount}</p>
+          </div>
+          <div class="rounded-xl bg-white border border-stone-200 p-3.5">
+            <div class="font-extrabold text-warmamber-700 text-xs uppercase">Primary Ecological Threats</div>
+            <p class="mt-1 text-stone-700">${activeH.primaryThreats}</p>
+          </div>
+          <div class="rounded-xl bg-white border border-stone-200 p-3.5">
+            <div class="font-extrabold text-forest-900 text-xs uppercase">Local Community Context</div>
+            <p class="mt-1 text-stone-700">${activeH.communityContext}</p>
+          </div>
+        </div>
+      `;
+    }
+
+    // ==================== PART 2: STRATEGIES & IMPACT SIMULATOR ====================
+    function toggleStrategy(stratId) {
+      const warn = document.getElementById('budget-warning');
+      warn.classList.add('hidden');
+
+      const idx = state.selectedStrategyIds.indexOf(stratId);
+      if (idx !== -1) {
+        state.selectedStrategyIds.splice(idx, 1);
+      } else {
+        const strat = STRATEGIES.find((s) => s.id === stratId);
+        if (!strat) return;
+        const currentUsed = getUsedBudget();
+        if (currentUsed + strat.cost > BUDGET_CAP) {
+          warn.classList.remove('hidden');
+          return;
+        }
+        state.selectedStrategyIds.push(stratId);
+      }
+
+      saveState();
+      renderStrategiesAndDashboard();
+      updateProgressBar();
+    }
+
+    function clearSelectedStrategies() {
+      state.selectedStrategyIds = [];
+      document.getElementById('budget-warning').classList.add('hidden');
+      saveState();
+      renderStrategiesAndDashboard();
+      updateProgressBar();
+    }
+
+    function getUsedBudget() {
+      return state.selectedStrategyIds.reduce((sum, id) => {
+        const s = STRATEGIES.find((item) => item.id === id);
+        return sum + (s ? s.cost : 0);
+      }, 0);
+    }
+
+    function renderStrategiesAndDashboard() {
+      const selectedStrats = state.selectedStrategyIds
+        .map((id) => STRATEGIES.find((s) => s.id === id))
+        .filter(Boolean);
+
+      const used = getUsedBudget();
+      const rem = BUDGET_CAP - used;
+
+      document.getElementById('budget-used-text').textContent = `${formatMoney(used)} / $1,000,000`;
+      document.getElementById('budget-rem-text').textContent = `${formatMoney(rem)} remaining`;
+      document.getElementById('selected-strat-count').textContent = `${selectedStrats.length} ${selectedStrats.length === 1 ? 'strategy' : 'strategies'} selected`;
+
+      // Levels & Criteria covered
+      const levelsSet = new Set();
+      const criteriaSet = new Set();
+      let rawPoach = 0;
+      let rawComm = 0;
+      let rawHab = 0;
+
+      selectedStrats.forEach((s) => {
+        levelsSet.add(s.level.replace(' Level', ''));
+        s.criteria.forEach((c) => criteriaSet.add(c));
+        rawPoach += s.impacts.poaching;
+        rawComm += s.impacts.community;
+        rawHab += s.impacts.habitat;
+      });
+
+      const poachPct = Math.min(100, rawPoach);
+      const commPct = Math.min(100, rawComm);
+      const habPct = Math.min(100, rawHab);
+
+      document.getElementById('levels-covered-text').textContent = `${levelsSet.size} / 4 Levels`;
+      document.getElementById('levels-list-text').textContent = levelsSet.size > 0
+        ? Array.from(levelsSet).join(', ')
+        : 'Select strategies below';
+
+      const critCount = criteriaSet.size;
+      document.getElementById('criteria-covered-text').textContent = `${critCount} / 8 Criteria`;
+      document.getElementById('criteria-bar').style.width = `${Math.round((critCount / 8) * 100)}%`;
+
+      document.getElementById('sim-poaching-pct').textContent = `${poachPct}%`;
+      document.getElementById('sim-poaching-bar').style.width = `${poachPct}%`;
+      document.getElementById('sim-community-pct').textContent = `${commPct}%`;
+      document.getElementById('sim-community-bar').style.width = `${commPct}%`;
+      document.getElementById('sim-habitat-pct').textContent = `${habPct}%`;
+      document.getElementById('sim-habitat-bar').style.width = `${habPct}%`;
+
+      // Weighted 5-Year Outlook for chosen hotspot
+      const activeH = HOTSPOTS.find((h) => h.id === state.selectedHotspotId) || HOTSPOTS[0];
+      const weightedScore = Math.round(
+        poachPct * activeH.weights.poaching +
+        commPct * activeH.weights.community +
+        habPct * activeH.weights.habitat
+      );
+
+      const outlookBadge = document.getElementById('outlook-badge');
+      const outlookSub = document.getElementById('outlook-subtext');
+      if (selectedStrats.length === 0) {
+        outlookBadge.className = 'text-sm sm:text-base font-extrabold text-stone-600 mt-1';
+        outlookBadge.textContent = 'Awaiting Plan';
+        outlookSub.textContent = 'Add strategies to model outcomes';
+      } else if (weightedScore >= 72 && levelsSet.size >= 2) {
+        outlookBadge.className = 'text-sm sm:text-base font-extrabold text-emerald-700 mt-1';
+        outlookBadge.textContent = `Strong Recovery (${weightedScore}/100)`;
+        outlookSub.textContent = 'Carcass ratio projected to drop ≤ 8%';
+      } else if (weightedScore >= 45) {
+        outlookBadge.className = 'text-sm sm:text-base font-extrabold text-warmamber-700 mt-1';
+        outlookBadge.textContent = `Partial Stabilization (${weightedScore}/100)`;
+        outlookSub.textContent = 'Consider balancing community & patrol gaps';
+      } else {
+        outlookBadge.className = 'text-sm sm:text-base font-extrabold text-red-700 mt-1';
+        outlookBadge.textContent = `High Risk (${weightedScore}/100)`;
+        outlookSub.textContent = 'Under-addresses core regional threats';
+      }
+
+      // Render Strategy Cards
+      const grid = document.getElementById('strategies-grid');
+      grid.innerHTML = STRATEGIES.map((s) => {
+        const isSelected = state.selectedStrategyIds.includes(s.id);
+        const canAfford = isSelected || (used + s.cost <= BUDGET_CAP);
+
+        return `
+          <div class="rounded-2xl border ${isSelected ? 'border-2 border-forest-900 bg-forest-50/60 shadow-xs' : 'border-stone-200 bg-white'} p-4 flex flex-col justify-between space-y-3 transition">
+            <div class="space-y-2">
+              <div class="flex flex-wrap items-center justify-between gap-2">
+                <span class="px-2.5 py-0.5 rounded-full text-[11px] font-extrabold ${s.levelBadgeClass}">${s.level}</span>
+                <span class="text-sm font-extrabold text-forest-900">${formatMoney(s.cost)}</span>
+              </div>
+              <h4 class="font-extrabold text-forest-900 text-sm sm:text-base">${s.name}</h4>
+              <p class="text-xs text-stone-600 leading-relaxed">${s.description}</p>
+              <div class="flex flex-wrap gap-1.5 pt-1">
+                ${s.criteria.map((c) => `<span class="px-2 py-0.5 rounded-md bg-stone-100 border border-stone-200 text-[11px] font-semibold text-stone-700">${c}</span>`).join('')}
+              </div>
+            </div>
+
+            <div class="pt-2 border-t border-stone-200 flex items-center justify-between gap-2">
+              <span class="text-[11px] font-semibold text-stone-500">Values: ${s.values.join(' & ')}</span>
+              <button
+                type="button"
+                onclick="toggleStrategy('${s.id}')"
+                class="px-3.5 py-1.5 rounded-xl text-xs font-extrabold transition cursor-pointer ${
+                  isSelected
+                    ? 'bg-forest-900 text-white hover:bg-forest-800'
+                    : canAfford
+                      ? 'bg-warmamber-600 text-white hover:bg-warmamber-700'
+                      : 'bg-stone-200 text-stone-500 hover:bg-stone-300'
+                }"
+              >
+                ${isSelected ? '&#10003; Included in Plan' : '+ Add to Plan'}
+              </button>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    // ==================== PROGRESS BAR ====================
+    function updateProgressBar() {
+      // 7 milestones:
+      // 1-2: Part 1 diagnosis & values answered
+      // 3: 3-5 strategies selected within $1,000,000 budget
+      // 4: Part 2 implementation roadmap answered
+      // 5-7: Part 3 Claim, Evidence, Reasoning answered
+      let done = 0;
+      const total = 7;
+
+      if (state.responses.p1Diagnosis.trim()) done++;
+      if (state.responses.p1Values.trim()) done++;
+
+      const count = state.selectedStrategyIds.length;
+      if (count >= 3 && count <= 5 && getUsedBudget() <= BUDGET_CAP) done++;
+
+      if (state.responses.p2Implementation.trim()) done++;
+      if (state.responses.cerClaim.trim()) done++;
+      if (state.responses.cerEvidence.trim()) done++;
+      if (state.responses.cerReasoning.trim()) done++;
+
+      const pct = Math.round((done / total) * 100);
+      document.getElementById('progress-text').textContent = `${pct}%`;
+      document.getElementById('progress-bar').style.width = `${pct}%`;
+    }
+
+    // ==================== SAVE / PRINT REPORT MODAL ====================
+    function openReportModal() {
+      const nameInput = document.getElementById('rep-student-input');
+      nameInput.value = state.studentName || '';
+      document.getElementById('rep-student-print-name').textContent = state.studentName.trim() || '______________________';
+      document.getElementById('rep-date').textContent = new Date().toLocaleDateString();
+
+      const activeH = HOTSPOTS.find((h) => h.id === state.selectedHotspotId) || HOTSPOTS[0];
+      document.getElementById('rep-hotspot-title').textContent = `Target Hotspot: ${activeH.name} (${activeH.tag})`;
+      document.getElementById('rep-p1-diag').textContent = state.responses.p1Diagnosis.trim() || 'No response entered.';
+      document.getElementById('rep-p1-val').textContent = state.responses.p1Values.trim() || 'No response entered.';
+
+      const selectedStrats = state.selectedStrategyIds
+        .map((id) => STRATEGIES.find((s) => s.id === id))
+        .filter(Boolean);
+      const used = getUsedBudget();
+      const levels = new Set(selectedStrats.map((s) => s.level));
+      const criteria = new Set();
+      selectedStrats.forEach((s) => s.criteria.forEach((c) => criteria.add(c)));
+
+      document.getElementById('rep-plan-metrics').textContent =
+        `Total Allocated: ${formatMoney(used)} / $1,000,000 | Levels Covered: ${levels.size}/4 | 8-Criteria Score: ${criteria.size}/8`;
+
+      const listEl = document.getElementById('rep-strategies-list');
+      if (selectedStrats.length === 0) {
+        listEl.innerHTML = '<li class="italic text-stone-500">No conservation interventions selected yet.</li>';
+      } else {
+        listEl.innerHTML = selectedStrats.map((s) =>
+          `<li><strong>${s.name}</strong> (${s.level} &mdash; ${formatMoney(s.cost)}): Criteria met: ${s.criteria.join(', ')}</li>`
+        ).join('');
+      }
+
+      document.getElementById('rep-p2-impl').textContent = state.responses.p2Implementation.trim() || 'No response entered.';
+      document.getElementById('rep-cer-claim').textContent = state.responses.cerClaim.trim() || 'No response entered.';
+      document.getElementById('rep-cer-evidence').textContent = state.responses.cerEvidence.trim() || 'No response entered.';
+      document.getElementById('rep-cer-reasoning').textContent = state.responses.cerReasoning.trim() || 'No response entered.';
+
+      document.getElementById('copy-toast').classList.add('hidden');
+      document.getElementById('report-modal').classList.remove('hidden');
+    }
+
+    function closeReportModal() {
+      document.getElementById('report-modal').classList.add('hidden');
+    }
+
+    function copyReportToClipboard() {
+      const activeH = HOTSPOTS.find((h) => h.id === state.selectedHotspotId) || HOTSPOTS[0];
+      const selectedStrats = state.selectedStrategyIds
+        .map((id) => STRATEGIES.find((s) => s.id === id))
+        .filter(Boolean);
+      const used = getUsedBudget();
+
+      const lines = [
+        'DAY 4: CONSERVATION ACTION PLAN & COEXISTENCE CAPSTONE REPORT',
+        `Student: ${state.studentName.trim() || 'Not entered'} | Date: ${new Date().toLocaleDateString()}`,
+        '==============================================================',
+        '',
+        `PART 1: TARGET HOTSPOT — ${activeH.name}`,
+        `1. Ecological Diagnosis:\n${state.responses.p1Diagnosis.trim() || 'No response entered.'}`,
+        '',
+        `2. Stakeholder & Biodiversity Value Conflict:\n${state.responses.p1Values.trim() || 'No response entered.'}`,
+        '',
+        `PART 2: $1,000,000 ACTION PLAN (${formatMoney(used)} / $1,000,000 allocated)`,
+        ...(selectedStrats.length > 0
+          ? selectedStrats.map((s) => `- ${s.name} (${s.level}, ${formatMoney(s.cost)})`)
+          : ['No strategies selected yet.']),
+        '',
+        `5-Year Implementation Roadmap:\n${state.responses.p2Implementation.trim() || 'No response entered.'}`,
+        '',
+        'PART 3: SCIENTIFIC ARGUMENT (CER)',
+        `Claim:\n${state.responses.cerClaim.trim() || 'No response entered.'}`,
+        '',
+        `Evidence:\n${state.responses.cerEvidence.trim() || 'No response entered.'}`,
+        '',
+        `Reasoning & Trade-Off Evaluation:\n${state.responses.cerReasoning.trim() || 'No response entered.'}`
+      ];
+
+      const temp = document.createElement('textarea');
+      temp.value = lines.join('\n');
+      temp.style.position = 'fixed';
+      temp.style.left = '-9999px';
+      document.body.appendChild(temp);
+      temp.select();
+      try {
+        document.execCommand('copy');
+        document.getElementById('copy-toast').classList.remove('hidden');
+      } catch (e) {
+        // Ignore clipboard errors
+      }
+      document.body.removeChild(temp);
+    }
+
+    // ==================== LOCAL STORAGE PERSISTENCE ====================
+    function saveState() {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+      } catch (e) {
+        // Ignore storage errors
+      }
+    }
+
+    function loadState() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (!raw) return;
+        const parsed = JSON.parse(raw);
+        if (parsed && typeof parsed === 'object') {
+          state = {
+            ...state,
+            ...parsed,
+            selectedStrategyIds: Array.isArray(parsed.selectedStrategyIds) ? parsed.selectedStrategyIds : [],
+            responses: { ...state.responses, ...(parsed.responses || {}) }
+          };
+        }
+      } catch (e) {
+        // Ignore parse errors
+      }
+    }
+
+    // ==================== RESET ALL PROGRESS ====================
+    function showResetConfirm() {
+      document.getElementById('reset-trigger-btn').classList.add('hidden');
+      document.getElementById('reset-confirm-bar').classList.remove('hidden');
+    }
+
+    function cancelReset() {
+      document.getElementById('reset-confirm-bar').classList.add('hidden');
+      document.getElementById('reset-trigger-btn').classList.remove('hidden');
+    }
+
+    function confirmResetAll() {
+      try {
+        localStorage.removeItem(STORAGE_KEY);
+      } catch (e) {
+        // Ignore storage errors
+      }
+
+      state = {
+        studentName: '',
+        selectedHotspotId: 'sebungwe',
+        selectedStrategyIds: [],
+        responses: {
+          p1Diagnosis: '',
+          p1Values: '',
+          p2Implementation: '',
+          cerClaim: '',
+          cerEvidence: '',
+          cerReasoning: ''
+        }
+      };
+
+      document.getElementById('budget-warning').classList.add('hidden');
+      applyTextValuesToDOM();
+      renderHotspotSection();
+      renderStrategiesAndDashboard();
+      updateProgressBar();
+      cancelReset();
+    }
+  </script>
+</body>
+</html>
